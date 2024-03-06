@@ -1,0 +1,81 @@
+KANBAN BOARD
+============================
+
+Kamus Belanda Dila - Analyze and Design Database
+Kamus Belanda Dila - BE : Create API User
+Kamus Belanda Dila - BE : Create API Kosa Kata
+Kamus Belanda Dila - App : Create Splash Screen
+Kamus Belanda Dila - App : Create Page Home Aplikasi Kamus Belanda
+Kamus Belanda Dila - App : Create UI untuk Search Data
+Kamus Belanda Dila - App : Implementasi API untuk Kosa Kata
+Kamus Belanda Dila - App : Create Page Detail untuk kosa kata
+
+Kamus Belanda Dila - Analyze and Design Database
+-----------------------------------------------------
+1. Goedemorgen - Ucapan Selamat pagi
+2. Goedemiddag - Ucapan Selamat siang
+3. Goedenavond - Ucapan Selamat malam
+4. Dag - Ucapan Selamat tinggal
+5. Ja - Ucapan untuk ya
+6. Nee - Ucapan untuk tidak
+7. Alsjeblieft - Tolong atau silahkan
+8. Dank je wel - Ucapan Terimakasih
+9. Graag gedaan - Sama-sama
+10. Broer - Saudara laki-laki
+11. Bal - Bola
+12. Kleur - Warna
+13. Klopt - Cocok
+14. Lekker - Enak atau nikmat
+15. Royaal - Boros
+16. Mes - Pisau
+17. Catur - Schaak
+18. Tot Ziens - Ucapan Sampai Jumpa
+19. Tot Straks - Ucapan Sampai Nanti
+20. Welkom - Ucapan Selamat Datang
+21. Verboden - Dilarang
+22. Gefeliciteerd - Ucapan Selamat
+23. Vandaag - Hari Ini
+24. Gisteren - Kemarin
+25. Het ontbijt - Makan Pagi
+26. Het avondmaal - Makan Malam
+27. Ik - Aku,saya
+28. Jij - Kamu,engkau
+29. Hij - Dia
+30. Vrouw - Perempuan,wanita
+31. Mouder - Ibu
+32. Vader - Ayah,papa,bapak
+33. Woud - Hutan
+34. Blad - Daun
+35. Boom - Pohon
+
+<?php
+$koneksi = mysqli_connect("localhost", "root", "", "beritadb");
+if($koneksi) {
+// echo "Berhasil konek ke database";
+} else {
+echo "Gagal koneksi";
+}
+?>
+
+<?php
+include "koneksi.php";
+$sql = "SELECT * FROM berita";
+$result = $koneksi->query($sql);
+if($result->num_rows > 0){
+$res['is_success'] = true;
+$res['message'] = "Berhasil Menampilkan Berita";
+$res['data'] = array();
+while ($row = $result->fetch_assoc()) {
+$res['data'][] = $row;
+}
+} else {
+$res['is_success'] = false;
+$res['message'] = "Gagal Menampilkan Berita";
+$res['data'] = null;
+}
+echo json_encode($res);
+?>
+
+
+
+

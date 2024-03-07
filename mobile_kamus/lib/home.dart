@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_kamus/models/model_kosakata.dart';
+import 'package:mobile_kamus/page_listdata.dart';
+
+import 'detail_kosakata.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,6 +42,17 @@ class _HomeScreen extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Vocabulary '),
         backgroundColor: Colors.cyan,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return PageSearchListData();
+              }
+              ));
+            },
+          ),
+        ],
       ),
 
       body: Padding(
@@ -56,11 +70,11 @@ class _HomeScreen extends State<HomeScreen> {
                     return Padding(
                       padding: EdgeInsets.all(8),
                       child: GestureDetector(
-                        // onTap: (){
-                        //   Navigator.push(context, MaterialPageRoute(builder: (context)
-                        //   => PageDetailBerita(data)
-                        //   ));
-                        // },
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)
+                          => PageDetailKosakata(data)
+                          ));
+                        },
                         child: Card(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,15 +82,8 @@ class _HomeScreen extends State<HomeScreen> {
                               ListTile(
                                 title: Text("${data?.kosa_kata}",
                                   style: TextStyle(
-                                      color: Colors.green,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                                subtitle: Text("${data?.arti}",
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.black54
                                   ),
                                 ),
 

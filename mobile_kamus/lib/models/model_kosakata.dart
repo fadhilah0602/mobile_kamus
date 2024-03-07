@@ -31,6 +31,8 @@ class ModelKosakata {
     "data": List<dynamic>.from(data.map((x) => x.toJson())),
   };
 
+  toLowerCase() {}
+
 
 }
 

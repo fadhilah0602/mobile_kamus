@@ -12,121 +12,86 @@ class PageSearchListData extends StatefulWidget {
 }
 
 class _PageSearchListDataState extends State<PageSearchListData> {
+  TextEditingController _searchController = TextEditingController();
+  List<dynamic> _kosakataList = [];
+  List<dynamic> _filteredKosakataList = [];
 
-  List<ModelKosakata> listKosakata = [];
-  bool isCari = true;
-  bool isLoading = false;
-  TextEditingController txtCari = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    fetchKosakata();
+  }
 
-  //bikin method untuk get kosakata
-  Future getUser() async{
-    try{
-      setState(() {
-        isLoading = true;
-      });
-      http.Response res = await http.get(Uri.parse('http://localhost/kosakataDb/getKosakata.php'));
-      var data = jsonDecode(res.body);
-      setState(() {
-        for(Map<String, dynamic> i in data){
-          listKosakata.add(ModelKosakata.fromJson(i));
-        }
-      });
+  Future<void> fetchKosakata() async {
+    final response = await http.get(Uri.parse('http://192.168.1.112/kosakataDb/getKosakata.php'));
 
-    }catch (e){
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
       setState(() {
-        isLoading = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString()))
-        );
+        _kosakataList = responseData['data'];
+        _filteredKosakataList = _kosakataList;
       });
+    } else {
+      throw Exception('Failed to load kosakata');
     }
   }
 
-  _PageSearchListDataState(){
-    txtCari.addListener(() {
-      if(txtCari.text.isEmpty){
-        setState(() {
-          isCari = true;
-          txtCari.text = "";
-        });
-      }else{
-        setState(() {
-          isCari = false;
-          txtCari.text != "";
-        });
-      }
+  void _filterKosakata(String query) {
+    setState(() {
+      _filteredKosakataList = _kosakataList
+          .where((kosakata) =>
+          kosakata['kosa_kata'].toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: Text('Vocabulary'),
+        title: Text('Search Vocabulary'),
+        backgroundColor: Colors.cyan,
       ),
-
-
-      body: ListView.builder(
-        itemCount: listKosakata.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: txtCari,
-                  decoration: InputDecoration(
-                      hintText: "Search Data",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none
-                      ),
-                      filled: true,
-                      fillColor: Colors.green.withOpacity(0.1)
-                  ),
-                ),
-                //kondisi
-                isCari ?
-                Expanded(child: ListView.builder(
-                    itemCount: listKosakata.length,
-                    itemBuilder: (context, index){
-                      return ListTile(
-                        title: Text(listKosakata[index] as String),
-                      );
-
-                    })) : CreateFilterList()
-              ],
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                _filterKosakata(value);
+              },
+              decoration: InputDecoration(
+                labelText: 'Search',
+                border: OutlineInputBorder(),
+              ),
             ),
-          );
-        },
-      )
-
-
-    );
-  }
-
-  Widget CreateFilterList(){
-    // listKosakata = [];
-    // for(int i =0; i<listKosakata.length; i++){
-    //   var item = listKosakata[i];
-    //   if(item.toLowerCase().contains(txtCari.text.toLowerCase())){
-    //     listKosakata.add(item);
-    //   }
-    // }
-    return HasilSearch();
-  }
-
-  Widget HasilSearch(){
-    return Expanded(
-      child: ListView.builder(
-        itemCount: listKosakata.length,
-        itemBuilder: (context, index){
-          return ListTile(
-            title: Text(listKosakata[index] as String),
-          );
-        },
+          ),
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemCount: _filteredKosakataList.length,
+          //     itemBuilder: (context, index) {
+          //       return ListTile(
+          //         title: Text(_filteredKosakataList[index]['kosa_kata']),
+          //         subtitle: Text(_filteredKosakataList[index]['arti']),
+          //       );
+          //     },
+          //   ),
+          // ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _filteredKosakataList.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  child: ListTile(
+                    title: Text(_filteredKosakataList[index]['kosa_kata']),
+                    subtitle: Text(_filteredKosakataList[index]['arti']),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
